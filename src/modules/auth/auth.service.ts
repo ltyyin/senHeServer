@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IResponse } from 'src/interface/response.interface';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 
 const logger = new Logger('auth.service');

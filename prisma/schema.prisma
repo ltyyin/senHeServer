@@ -17,6 +17,8 @@ model UserAccount {
   updateAt  DateTime? @updatedAt
 
   userPassword UserPassword?
+  userInfo     UserInfo?
+  userChannel  UserChannel[]
 
   @@map("users-account")
 }
@@ -29,4 +31,41 @@ model UserPassword {
   userID      String      @unique
 
   @@map("users-password")
+}
+
+model UserInfo {
+  name  String  @unique
+  photo String? @db.Char(255)
+
+  userAccount UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userID      String      @unique
+
+  @@map("users-info")
+}
+
+model UserChannel {
+  id   String @id @default(cuid())
+  name String @db.Char(40)
+
+  userAccount UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userID      String
+
+  @@map("users-channel")
+}
+
+model Article {
+  id           String    @id @default(cuid())
+  title        String
+  cover        String?   @db.VarChar(255)
+  category     String
+  comm_count   Int       @default(0) @db.SmallInt
+  browse_count Int       @default(0)
+  is_top       Int       @default(0) @db.TinyInt
+  like_count   Int       @default(0)
+  pubdate      DateTime  @default(now())
+  updateAt     DateTime? @updatedAt
+  channelID    String
+  userID       String
+
+  @@map("articles")
 }

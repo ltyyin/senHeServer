@@ -2,8 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 /**
  * 开启日志输入模式
@@ -12,6 +10,9 @@ const logger = new Logger('main.ts');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  /* 开启全局路由前缀 */
+  app.setGlobalPrefix('api');
 
   // 开启全局验证pipe
   app.useGlobalPipes(new ValidationPipe());
@@ -31,8 +32,8 @@ async function bootstrap() {
   /**
    * 开启服务的API端口
    */
-  const listenPort = process.env.SERVER_PORT;
-  await app.listen(listenPort);
-  logger.log(`listen in http://localhost:${listenPort}/api-docs`);
+  const PORT = process.env.SERVER_PORT;
+  await app.listen(PORT);
+  logger.log(`listen in http://localhost:${PORT}/api-docs`);
 }
 bootstrap();

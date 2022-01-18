@@ -1,11 +1,10 @@
-import { Prisma, UserAccount } from '.prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MinLength } from 'class-validator';
 
 export class RegisterDto {
-  @ApiProperty({ example: '13528912523', description: '用户手机号码' })
-  @MinLength(11)
-  @IsNotEmpty()
+  @ApiProperty({ example: '13500000000', description: '用户手机号码' })
+  @MinLength(11, { message: '手机号码必须为11位数' })
+  @IsNotEmpty({ message: '缺少手机号码必填项' })
   phone: string;
 
   // @ApiProperty({ description: '用户名称', example: 'Lisa' })
@@ -22,7 +21,7 @@ export class RegisterDto {
 
   @ApiProperty({
     description: '密码',
-    example: '123456',
+    example: '123123',
   })
   password: string;
 
