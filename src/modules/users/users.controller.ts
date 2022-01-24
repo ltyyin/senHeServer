@@ -24,11 +24,4 @@ export class UsersController {
   public async create(@Body() phoneCreateDto: PhoneRegisterDto) {
     return await this.usersService.verifyCodeRegister(phoneCreateDto);
   }
-
-  /* 获取用户频道 */
-  @Get('channels')
-  @ApiOperation({ summary: '获取用户频道' })
-  public async getChannels(@Query('id') id: string) {
-    return await this.usersService.getChannels(id);
-  }
 }

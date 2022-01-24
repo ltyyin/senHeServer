@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { OssModule } from './common/oss/oss.module';
 import { UsersModule } from './modules/users/users.module';
 import { ArticlesModule } from './modules/articles/articles.module';
+import { ChannelsModule } from './modules/channels/channels.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ArticlesModule } from './modules/articles/articles.module';
     OssModule,
     UsersModule,
     ArticlesModule,
+    ChannelsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

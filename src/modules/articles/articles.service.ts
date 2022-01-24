@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { async } from 'rxjs';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { findAllParamsDto } from './dto/findAll-params.dto';
@@ -10,18 +9,24 @@ export class ArticlesService {
   constructor(private readonly prisma: PrismaService) {}
   private timestamp: number = null;
   private skip: number = 0;
-  private channelID: string = null;
 
-  create(createArticleDto: CreateArticleDto) {
-    return 'This action adds a new article';
+  public async create(createArticleDto: CreateArticleDto) {
+    return await this.prisma.article.create({
+      data: {
+        title: createArticleDto.title,
+        cover: createArticleDto.cover,
+        category: createArticleDto.category,
+        comm_count: createArticleDto.comm_count,
+        browse_count: createArticleDto.browse_count,
+        is_top: createArticleDto.is_top,
+        like_count: createArticleDto.like_count,
+        channelID: createArticleDto.channelID,
+        userID: createArticleDto.userID,
+      },
+    });
   }
 
   public async findAll(params: findAllParamsDto) {
-    // if (params.channel_id !== this.channelID) {
-    //   this.channelID = params.channel_id;
-    //   this.skip = 0;
-    // }
-
     this.skip = +params.skip;
 
     let articles = await this.prisma.article.findMany({
@@ -45,27 +50,41 @@ export class ArticlesService {
 
     this.timestamp = Date.now();
 
-    /* 文章的查询结果中加入author */
-    articles = await Promise.all(
-      articles.map(async (article: any) => {
-        const user = await this.prisma.userAccount.findUnique({
-          where: {
-            id: article.userID,
-          },
-          select: {
-            userInfo: {
-              select: {
-                name: true,
-              },
+    const promises = articles.map(async (article: any) => {
+      const user = await this.prisma.userAccount.findUnique({
+        where: {
+          id: article.userID,
+        },
+        select: {
+          userInfo: {
+            select: {
+              name: true,
             },
           },
-        });
+        },
+      });
+      // 如果座位不存在，抛出异常
+      if (!user) {
+        throw new Error(`ID为：${article.userID}的用户不存在`);
+      }
+      /* 文章的查询结果中加入author */
+      article.author = user.userInfo.name;
+      return article;
+    });
 
-        article.author = user.userInfo.name;
-
-        return article;
-      }),
-    );
+    articles = await Promise.allSettled(promises)
+      .then((articles) => {
+        return articles
+          .filter((article) => {
+            return article.status === 'fulfilled';
+          })
+          .map((article: any) => {
+            return article.value;
+          });
+      })
+      .catch((err) => {
+        return [];
+      });
 
     return {
       message: 'ok',

@@ -43,13 +43,26 @@ model UserInfo {
   @@map("users-info")
 }
 
-model UserChannel {
+model AllChannel {
   id   String @id @default(cuid())
   name String @db.Char(40)
+
+  userChannel UserChannel[]
+
+  @@map("all-channel")
+}
+
+model UserChannel {
+  pubdate  DateTime  @default(now())
+  updateAt DateTime? @updatedAt
 
   userAccount UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userID      String
 
+  allChannel AllChannel @relation(fields: [channelID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  channelID  String
+
+  @@id([channelID, userID])
   @@map("users-channel")
 }
 
@@ -58,10 +71,10 @@ model Article {
   title        String
   cover        String?   @db.VarChar(255)
   category     String
-  comm_count   Int       @default(0) @db.SmallInt
-  browse_count Int       @default(0)
+  comm_count   Int       @default(0) @db.UnsignedInt
+  browse_count Int       @default(0) @db.UnsignedInt
   is_top       Int       @default(0) @db.TinyInt
-  like_count   Int       @default(0)
+  like_count   Int       @default(0) @db.UnsignedInt
   pubdate      DateTime  @default(now())
   updateAt     DateTime? @updatedAt
   channelID    String

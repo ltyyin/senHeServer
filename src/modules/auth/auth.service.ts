@@ -24,7 +24,7 @@ export class AuthService {
     if (userPhoen) {
       this.res = {
         code: 400,
-        msg: '该用户以注册',
+        msg: '该用户已注册',
       };
 
       return this.res;
